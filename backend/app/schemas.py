@@ -3,16 +3,25 @@ from datetime import date
 from typing import Optional, List
 
 
-# ------------------ USER ------------------
-class UserBase(BaseModel):
-    email: EmailStr
-    name: Optional[str] = None
+# ---------------- AUTH ----------------
+class UserCreate(BaseModel):
+    email: str
+    password: str
+    name: str
 
-class UserCreate(UserBase):
+class UserLogin(BaseModel):
+    email: str
     password: str
 
-class UserResponse(UserBase):
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class UserResponse(BaseModel):
     id: int
+    email: str
+    name: str
+
     class Config:
         orm_mode = True
 
@@ -48,3 +57,12 @@ class GoalResponse(GoalBase):
     user_id: int
     class Config:
         orm_mode = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+# ------------------ TOKEN ------------------
+class Token(BaseModel):
+    access_token: str
+    token_type: str

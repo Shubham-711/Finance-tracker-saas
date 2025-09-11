@@ -2,6 +2,9 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from app import dbm, models
 from app.routes import auth
+from app.routes import auth, transactions
+from app.routes import auth,transactions, goals 
+from app.routes import auth, transactions, goals, reports
 
 app = FastAPI(title="Finance Tracker API")
 
@@ -25,3 +28,6 @@ def on_startup():
     models.Base.metadata.create_all(bind=dbm.engine)
 
 app.include_router(auth.router)
+app.include_router(transactions.router)
+app.include_router(goals.router)
+app.include_router(reports.router)
