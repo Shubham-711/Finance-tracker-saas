@@ -1,60 +1,71 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
-export default function Login() {
+function Login({ onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.post("http://127.0.0.1:8000/auth/login", {
         email,
         password,
       });
+
       localStorage.setItem("token", res.data.access_token);
-      navigate("/");
+
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      }
+      navigate("/dashboard");
     } catch (err) {
-      alert("Login failed: " + err.response?.data?.detail);
+      console.error(err);
+      alert("Login failed");
     }
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-100">
-      <form
-        onSubmit={handleLogin}
-        className="bg-white p-8 rounded-2xl shadow-md w-96 flex flex-col gap-4"
-      >
-        <h1 className="text-2xl font-bold text-center">Login</h1>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="p-3 border rounded-lg"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="p-3 border rounded-lg"
-          required
-        />
-        <button
-          type="submit"
-          className="bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
-        >
-          Login
-        </button>
-        <p className="text-sm text-center">
+    <div className="flex items-center justify-center h-screen bg-gray-100">
+      <div className="bg-white p-6 rounded shadow-md w-96">
+        <h2 className="text-2xl font-bold mb-4">Login</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full p-2 mb-3 border rounded"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full p-2 mb-3 border rounded"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+          >
+            Login
+          </button>
+        </form>
+
+        {/* Link to signup */}
+        <p className="text-center mt-4">
           Don’t have an account?{" "}
-          <a href="/signup" className="text-blue-600">Sign up</a>
+          <Link to="/signup" className="text-blue-500 hover:underline">
+            Sign Up
+          </Link>
         </p>
-      </form>
+      </div>
     </div>
   );
 }
+
+export default Login;

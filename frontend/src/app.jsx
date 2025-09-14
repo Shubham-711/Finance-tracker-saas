@@ -1,47 +1,45 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
+import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+// Components
 import Header from "./components/Header";
+import Sidebar from "./components/sidebar"; 
+
+// Pages
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import Signup from "./pages/signup"; 
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
 import Goals from "./pages/Goals";
 
 function App() {
-  const isAuthenticated = !!localStorage.getItem("token");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+  };
   return (
     <Router>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+      <div className="flex h-screen">
+        {/* Sidebar on the left */}
+        <Sidebar />
 
-        {/* Protected Routes */}
-        {isAuthenticated ? (
-          <Route
-            path="/*"
-            element={
-              <div className="flex h-screen bg-gray-50">
-                <Sidebar />
-                <div className="flex-1 flex flex-col">
-                  <Header />
-                  <main className="p-6">
-                    <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/transactions" element={<Transactions />} />
-                      <Route path="/goals" element={<Goals />} />
-                    </Routes>
-                  </main>
-                </div>
-              </div>
-            }
-          />
-        ) : (
-          <Route path="/*" element={<Navigate to="/login" />} />
-        )}
-      </Routes>
+        <div className="flex flex-col flex-1">
+          {/* Header always on top */}
+          <Header />
+
+          {/* Main content area */}
+          <main className="p-6 flex-1 overflow-y-auto bg-gray-50">
+            <Routes>
+              <Route path="/" element={<Login onLoginSuccess={handleLoginSuccess} />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/transactions" element={<Transactions />} />
+              <Route path="/goals" element={<Goals />} />
+            </Routes>
+          </main>
+        </div>
+      </div>
     </Router>
   );
 }

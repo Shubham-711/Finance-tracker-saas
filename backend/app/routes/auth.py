@@ -5,6 +5,7 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from app.utils import hash_password,verify_password
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
@@ -50,14 +51,16 @@ def signup(user: schemas.UserCreate, db: Session = Depends(dbm.get_db)):
 
 # ---------------- LOGIN ----------------
 @router.post("/login", response_model=schemas.Token)
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(dbm.get_db)):
-    user = db.query(models.User).filter(models.User.email == form_data.username).first()
-    if not user or not verify_password(form_data.password, user.password):
+def login(user: schemas.UserLogin, db: Session = Depends(dbm.get_db)):
+    db_user = db.query(models.User).filter(models.User.email == user.email).first()
+    if not db_user or not verify_password(user.password, db_user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    token = create_access_token(data={"sub": user.email}, expires_delta=token_expires)
+    token = create_access_token(data={"sub": db_user.email}, expires_delta=token_expires)
     return {"access_token": token, "token_type": "bearer"}
+
+
 
 # ---------------- GET CURRENT USER ----------------
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(dbm.get_db)):
