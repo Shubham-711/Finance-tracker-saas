@@ -1,71 +1,75 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import apiClient from "../api/axios";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
-function Login({ onLoginSuccess }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const Login = ({ onLoginSuccess }) => {
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post("http://127.0.0.1:8000/auth/login", {
-        email,
-        password,
-      });
-
-      localStorage.setItem("token", res.data.access_token);
-
-      if (onLoginSuccess) {
-        onLoginSuccess();
-      }
-      navigate("/dashboard");
-    } catch (err) {
-      console.error(err);
-      alert("Login failed");
-    }
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-4">Login</h2>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full p-2 mb-3 border rounded"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full p-2 mb-3 border rounded"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-          >
-            Login
-          </button>
-        </form>
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-        {/* Link to signup */}
-        <p className="text-center mt-4">
-          Don’t have an account?{" "}
-          <Link to="/signup" className="text-blue-500 hover:underline">
-            Sign Up
-          </Link>
-        </p>
-      </div>
+  try {
+    const response = await apiClient.post("/auth/login", {
+      email: form.email,
+      password: form.password,
+    });
+
+    // store access_token correctly
+    localStorage.setItem("token", response.data.access_token);
+
+    toast.success("Login successful! 🎉");
+    if (onLoginSuccess) onLoginSuccess();
+    navigate("/dashboard");
+  } catch (err) {
+    toast.error(err.response?.data?.detail || "Login failed ❌");
+  } finally {
+    setLoading(false);
+  }
+};
+
+  return (
+    <div className="flex justify-center items-center h-screen bg-gray-100">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white shadow-md rounded-lg p-6 w-80"
+      >
+        <h2 className="text-xl font-bold mb-4">Login</h2>
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={handleChange}
+          className="w-full p-2 border rounded mb-3"
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={handleChange}
+          className="w-full p-2 border rounded mb-3"
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full p-2 rounded text-white ${
+            loading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+          }`}
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
+      </form>
     </div>
   );
-}
+};
 
 export default Login;

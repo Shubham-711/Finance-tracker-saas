@@ -54,6 +54,7 @@ class TransactionResponse(TransactionBase):
 # ------------------ GOALS ------------------
 class GoalBase(BaseModel):
     target_amount: float
+    current_amount: float = 0.0 
     deadline: date
 
 class GoalCreate(GoalBase):
@@ -61,6 +62,7 @@ class GoalCreate(GoalBase):
 
 class GoalUpdate(BaseModel):
     target_amount: Optional[float] = None
+    current_amount: Optional[float] = None
     deadline: Optional[date] = None
     
 class GoalResponse(GoalBase):

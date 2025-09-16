@@ -34,6 +34,7 @@ class Goal(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     target_amount = Column(Float, nullable=False)
+    current_amount = Column(Float, default=0.0)
     deadline = Column(Date, nullable=False)
 
     user = relationship("User", back_populates="goals")

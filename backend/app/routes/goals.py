@@ -12,6 +12,7 @@ router = APIRouter(prefix="/goals", tags=["goals"])
 def create_goal(goal: schemas.GoalCreate, db: Session = Depends(dbm.get_db), current_user: models.User = Depends(get_current_user)):
     new_goal = models.Goal(
         target_amount=goal.target_amount,
+        current_amount=goal.current_amount,
         deadline=goal.deadline,
         user_id=current_user.id
     )
@@ -35,6 +36,7 @@ def update_goal(goal_id: int, updated: schemas.GoalCreate, db: Session = Depends
         raise HTTPException(status_code=404, detail="Goal not found")
 
     goal.target_amount = updated.target_amount
+    goal.current_amount = updated.current_amount
     goal.deadline = updated.deadline
     db.commit()
     db.refresh(goal)
