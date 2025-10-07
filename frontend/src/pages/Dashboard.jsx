@@ -3,6 +3,7 @@ import Sidebar from "../components/sidebar";
 import AddTransactionModal from "../components/AddTransactionModal";
 import AddGoalModal from "../components/AddGoalModal";
 import apiClient from "../api/axios";
+import RecentTransactionsTable from '../components/RecentTransactionsTable';
 
 const Dashboard = () => {
   const [transactions, setTransactions] = useState([]);

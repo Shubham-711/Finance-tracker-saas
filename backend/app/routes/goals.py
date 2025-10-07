@@ -8,7 +8,7 @@ router = APIRouter(prefix="/goals", tags=["goals"])
 
 
 # ---------------- CREATE GOAL ----------------
-@router.post("/", response_model=schemas.GoalResponse)
+@router.post("", response_model=schemas.GoalResponse)
 def create_goal(goal: schemas.GoalCreate, db: Session = Depends(dbm.get_db), current_user: models.User = Depends(get_current_user)):
     new_goal = models.Goal(
         target_amount=goal.target_amount,
@@ -23,7 +23,7 @@ def create_goal(goal: schemas.GoalCreate, db: Session = Depends(dbm.get_db), cur
 
 
 # ---------------- LIST GOALS ----------------
-@router.get("/", response_model=List[schemas.GoalResponse])
+@router.get("", response_model=List[schemas.GoalResponse])
 def get_goals(db: Session = Depends(dbm.get_db), current_user: models.User = Depends(get_current_user)):
     return db.query(models.Goal).filter(models.Goal.user_id == current_user.id).all()
 

@@ -5,11 +5,11 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from app.utils import hash_password,verify_password
 
+# This part defines how FastAPI gets the token for protected routes
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-SECRET_KEY = "your_super_secret_key"  # replace later with env var
+SECRET_KEY = "your_super_secret_key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
@@ -17,25 +17,20 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-# ---------------- PASSWORD UTILS ----------------
+# --- Helper Functions (These are likely correct in your file) ---
 def hash_password(password: str):
     return pwd_context.hash(password)
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-# ---------------- JWT UTILS ----------------
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+    expire_time = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    to_encode.update({"exp": expire_time})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-# ---------------- SIGNUP ----------------
+# --- SIGNUP (This endpoint is correct and doesn't need to change) ---
 @router.post("/signup", response_model=schemas.UserResponse)
 def signup(user: schemas.UserCreate, db: Session = Depends(dbm.get_db)):
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
@@ -49,20 +44,19 @@ def signup(user: schemas.UserCreate, db: Session = Depends(dbm.get_db)):
     db.refresh(new_user)
     return new_user
 
-# ---------------- LOGIN ----------------
+# --- LOGIN (THIS IS THE CRITICAL FIX) ---
 @router.post("/login", response_model=schemas.Token)
 def login(user: schemas.UserLogin, db: Session = Depends(dbm.get_db)):
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
+    
     if not db_user or not verify_password(user.password, db_user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    token = create_access_token(data={"sub": db_user.email}, expires_delta=token_expires)
+    token = create_access_token(data={"sub": db_user.email})
     return {"access_token": token, "token_type": "bearer"}
 
 
-
-# ---------------- GET CURRENT USER ----------------
+# --- GET CURRENT USER (This is for protecting other endpoints) ---
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(dbm.get_db)):
     credentials_exception = HTTPException(
         status_code=401,

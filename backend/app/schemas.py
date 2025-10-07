@@ -2,16 +2,17 @@ from pydantic import BaseModel, EmailStr
 from datetime import date
 from typing import Optional, List
 
-
 # ---------------- AUTH ----------------
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
     name: str
 
-class UserLogin(BaseModel):  
+
+class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
 
 class UserResponse(BaseModel):
     id: int
@@ -21,12 +22,13 @@ class UserResponse(BaseModel):
     class Config:
         orm_mode = True
 
+
 class Token(BaseModel):
     access_token: str
     token_type: str
 
 
-# ------------------ TRANSACTIONS ------------------
+# ---------------- TRANSACTIONS ----------------
 class TransactionBase(BaseModel):
     type: str
     category: str
@@ -34,8 +36,10 @@ class TransactionBase(BaseModel):
     date: date
     description: Optional[str] = None
 
+
 class TransactionCreate(TransactionBase):
     pass
+
 
 class TransactionUpdate(BaseModel):
     type: Optional[str] = None
@@ -44,38 +48,35 @@ class TransactionUpdate(BaseModel):
     date: Optional[date] = None
     description: Optional[str] = None
 
+
 class TransactionResponse(TransactionBase):
     id: int
     user_id: int
+
     class Config:
         orm_mode = True
 
 
-# ------------------ GOALS ------------------
+# ---------------- GOALS ----------------
 class GoalBase(BaseModel):
     target_amount: float
-    current_amount: float = 0.0 
+    current_amount: float = 0.0
     deadline: date
+
 
 class GoalCreate(GoalBase):
     pass
+
 
 class GoalUpdate(BaseModel):
     target_amount: Optional[float] = None
     current_amount: Optional[float] = None
     deadline: Optional[date] = None
-    
+
+
 class GoalResponse(GoalBase):
     id: int
     user_id: int
+
     class Config:
         orm_mode = True
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-# ------------------ TOKEN ------------------
-class Token(BaseModel):
-    access_token: str
-    token_type: str

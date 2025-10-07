@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../api/axios';
+import { useData } from '../context/DataContext';
 import AddTransactionModal from '../components/AddTransactionModal';
 
 const Transactions = () => {

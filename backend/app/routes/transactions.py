@@ -7,7 +7,7 @@ from app.routes.auth import get_current_user
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 
 # Create transaction
-@router.post("/", response_model=schemas.TransactionResponse)
+@router.post("", response_model=schemas.TransactionResponse)
 def create_transaction(
     transaction: schemas.TransactionCreate,
     db: Session = Depends(dbm.get_db),
@@ -20,7 +20,7 @@ def create_transaction(
     return new_transaction
 
 # Get all transactions for current user
-@router.get("/", response_model=List[schemas.TransactionResponse])
+@router.get("", response_model=List[schemas.TransactionResponse])
 def get_transactions(
     db: Session = Depends(dbm.get_db),
     current_user: models.User = Depends(get_current_user),

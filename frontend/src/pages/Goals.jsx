@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import apiClient from "../api/axios";
+import GoalCard from '../components/GoalCard';
 
 const Goals = () => {
   const [goals, setGoals] = useState([]);
