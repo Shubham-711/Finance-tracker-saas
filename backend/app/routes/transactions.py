@@ -13,11 +13,19 @@ def create_transaction(
     db: Session = Depends(dbm.get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    new_transaction = models.Transaction(**transaction.dict(), user_id=current_user.id)
+    
+    data = transaction.dict()
+    data["transaction_type"] = data["transaction_type"].strip().lower()
+    data["user_id"] = current_user.id
+
+    new_transaction = models.Transaction(**data)
+
     db.add(new_transaction)
     db.commit()
     db.refresh(new_transaction)
     return new_transaction
+
+
 
 # Get all transactions for current user
 @router.get("", response_model=List[schemas.TransactionResponse])

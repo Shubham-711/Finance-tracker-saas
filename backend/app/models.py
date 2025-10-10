@@ -19,7 +19,7 @@ class Transaction(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    type = Column(String, nullable=False)  # income or expense
+    transaction_type = Column(String, nullable=False)  # income or expense
     category = Column(String, nullable=False)
     amount = Column(Float, nullable=False)
     date = Column(Date, nullable=False)

@@ -24,7 +24,7 @@ const handleSubmit = async (e) => {
       category,
       amount: finalAmount,
       description,
-      type: isExpense ? "expense" : "income"
+      transaction_type: isExpense ? "expense" : "income"
     });
     onTransactionAdded(response.data);
     onClose();

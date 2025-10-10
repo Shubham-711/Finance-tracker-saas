@@ -30,7 +30,7 @@ class Token(BaseModel):
 
 # ---------------- TRANSACTIONS ----------------
 class TransactionBase(BaseModel):
-    type: str
+    transaction_type: str
     category: str
     amount: float
     date: date
@@ -42,7 +42,7 @@ class TransactionCreate(TransactionBase):
 
 
 class TransactionUpdate(BaseModel):
-    type: Optional[str] = None
+    transaction_type: Optional[str] = None
     category: Optional[str] = None
     amount: Optional[float] = None
     date: Optional[date] = None
