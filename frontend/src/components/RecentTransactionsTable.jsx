@@ -21,7 +21,7 @@ const RecentTransactionsTable = ({ transactions }) => {
                   <td className="px-6 py-4">{new Date(tx.date).toLocaleDateString()}</td>
                   <td className="px-6 py-4">{tx.category}</td>
                   <td className="px-6 py-4">{tx.description}</td>
-                  <td className={`px-6 py-4 text-right font-medium ${tx.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                  <td className={`px-6 py-4 text-right font-medium ${tx.transaction_type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
                     ₹{tx.amount.toFixed(2)}
                   </td>
                 </tr>

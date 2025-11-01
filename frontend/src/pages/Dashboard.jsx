@@ -93,7 +93,8 @@ const Dashboard = () => {
           {transactions.map((tx) => (
             <li key={tx.id} className="p-3 border rounded-md flex items-center justify-between">
               <span>
-                {tx.date} - <strong>{tx.category}</strong>: ₹{tx.amount} ({tx.description})
+                {tx.date} — <strong>{tx.transaction_type}</strong>: ₹{tx.amount} ({tx.category})
+
               </span>
               <span>
                 <button

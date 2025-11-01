@@ -52,18 +52,19 @@ const Transactions = () => {
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
-            {transactions.length > 0 ? (
-              transactions.map(tx => (
-                <tr key={tx.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">{new Date(tx.date).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{tx.category}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{tx.description}</td>
-                  <td className={`px-6 py-4 whitespace-nowrap text-right font-medium ${tx.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    ₹{Number(tx.amount).toFixed(2)}
-                  </td>
-                </tr>
-              ))
+         <tbody className="divide-y divide-gray-200">
+         {transactions.length > 0 ? (
+          transactions.map(tx => (
+           <tr key={tx.id}>
+           <td className="px-6 py-4 whitespace-nowrap">{new Date(tx.date).toLocaleDateString()}</td>
+           <td className="px-6 py-4 whitespace-nowrap">{tx.category}</td>
+           <td className="px-6 py-4 whitespace-nowrap">{tx.description}</td>
+           <td className={`px-6 py-4 whitespace-nowrap text-right font-medium ${tx.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
+          ₹{Number(tx.amount).toFixed(2)}
+        </td>
+      </tr>
+    ))
+
             ) : (
               <tr>
                 <td colSpan="4" className="text-center py-10 text-gray-500">

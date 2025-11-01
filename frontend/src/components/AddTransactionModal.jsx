@@ -1,66 +1,107 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import apiClient from '../api/axios';
 
-const AddTransactionModal = ({ isOpen, onClose, onTransactionAdded }) => {
-  // State for each form field
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [category, setCategory] = useState('');
-  const [amount, setAmount] = useState('');
-  const [description, setDescription] = useState('');
-  const [isExpense, setIsExpense] = useState(true); // Default to expense
-  const [error, setError] = useState('');
 
-  if (!isOpen) return null;
+const AddTransactionModal = ({ onClose, onTransactionAdded }) => {
+  const [transactionType, setTransactionType] = useState("expense");
+  const [date, setDate] = useState("");
+  const [category, setCategory] = useState("");
+  const [amount, setAmount] = useState("");
+  const [description, setDescription] = useState("");
+  const [error, setError] = useState("");
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError('');
+  const handleTypeClick = (type) => {
+    setTransactionType(type);
+    // Automatically fill category to avoid lowercase mistakes
+    setCategory(type === "income" ? "income" : "expense");
+  };
 
-  const finalAmount = Math.abs(parseFloat(amount)); // Always positive, let type decide
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
 
-  try {
-    const response = await apiClient.post('/transactions', {
-      date,
-      category,
-      amount: finalAmount,
-      description,
-      transaction_type: isExpense ? "expense" : "income"
-    });
-    onTransactionAdded(response.data);
-    onClose();
-  } catch (err) {
-    setError('Failed to add transaction. Please try again.');
-    console.error(err);
-  }
-};
+    const finalAmount = Math.abs(parseFloat(amount));
+
+    try {
+      const payload = {
+        date,
+        category,
+        amount: finalAmount,
+        description,
+        transaction_type: transactionType, // always lowercased
+      };
+
+      console.log("DEBUG submitting transaction:", payload);
+
+      await apiClient.post("/transactions", payload);
+      if (onTransactionAdded) await onTransactionAdded();
+      onClose();
+    } catch (err) {
+      console.error(err);
+      setError("Failed to add transaction. Please try again.");
+    }
+  };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4">Add New Transaction</h2>
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Transaction Type: Income or Expense */}
-          <div className="flex gap-4 mb-4">
-            <button type="button" onClick={() => setIsExpense(true)} className={`flex-1 py-2 rounded-lg ${isExpense ? 'bg-red-500 text-white' : 'bg-gray-200'}`}>Expense</button>
-            <button type="button" onClick={() => setIsExpense(false)} className={`flex-1 py-2 rounded-lg ${!isExpense ? 'bg-green-500 text-white' : 'bg-gray-200'}`}>Income</button>
-          </div>
+    <div style={{ padding: "1rem", border: "1px solid #ccc" }}>
+      <h3>Add New Transaction</h3>
 
-          <input type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full p-2 border rounded-md" required />
-          <input type="text" placeholder="Category" value={category} onChange={e => setCategory(e.target.value)} className="w-full p-2 border rounded-md" required />
-          <input type="number" placeholder="Amount (₹)" value={amount} onChange={e => setAmount(e.target.value)} className="w-full p-2 border rounded-md" required />
-          <input type="text" placeholder="Description" value={description} onChange={e => setDescription(e.target.value)} className="w-full p-2 border rounded-md" />
-          
-          <div className="flex justify-end space-x-4 pt-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">Cancel</button>
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Add Transaction</button>
-          </div>
-        </form>
+      <div style={{ marginBottom: "10px" }}>
+        <button
+          onClick={() => handleTypeClick("expense")}
+          style={{
+            backgroundColor: transactionType === "expense" ? "#ffcccc" : "#f2f2f2",
+            marginRight: "10px",
+          }}
+        >
+          Expense
+        </button>
+        <button
+          onClick={() => handleTypeClick("income")}
+          style={{
+            backgroundColor: transactionType === "income" ? "#ccffcc" : "#f2f2f2",
+          }}
+        >
+          Income
+        </button>
       </div>
+
+      <form onSubmit={handleSubmit}>
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          required
+        />{" "}
+        <input
+          type="text"
+          value={category}
+          onChange={(e) => setCategory(e.target.value.toLowerCase())}
+          placeholder="Category"
+          required
+        />{" "}
+        <input
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          placeholder="Amount (₹)"
+          required
+        />{" "}
+        <input
+          type="text"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Description"
+        />{" "}
+        <button type="button" onClick={onClose}>
+          Cancel
+        </button>{" "}
+        <button type="submit">Add Transaction</button>
+      </form>
+
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 };
 
 export default AddTransactionModal;
-

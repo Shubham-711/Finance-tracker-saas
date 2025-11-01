@@ -8,7 +8,6 @@ import Card from "../components/Card";
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Title);
 
 const Reports = () => {
-  // --- THIS IS THE MAIN FIX ---
   // We are now asking for 'summary', 'trends', and 'loading' which the context provides.
   const { summary, trends, loading } = useData();
 
@@ -32,13 +31,13 @@ const Reports = () => {
     datasets: [
       {
         label: 'Income',
-        data: trends.income, // Use the 'income' property from the context
+        data: trends.income_data, // Use the 'income' property from the context
         borderColor: '#10B981',
         tension: 0.1
       },
       {
         label: 'Expense',
-        data: trends.expenses, // Use the 'expenses' property from the context
+        data: trends.expense_data, // Use the 'expenses' property from the context
         borderColor: '#EF4444',
         tension: 0.1
       }

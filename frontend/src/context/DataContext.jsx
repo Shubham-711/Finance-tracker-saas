@@ -30,9 +30,9 @@ export const DataProvider = ({ children }) => {
         setGoals(goalsRes.data);
         setSummary(summaryRes.data);
         setTrends({
-          labels: trendsRes.data.labels,
-          expenses: trendsRes.data.expense_data,
-          income: trendsRes.data.income_data,
+        labels: trendsRes.data.labels,
+        expense_data: trendsRes.data.expense_data,
+        income_data: trendsRes.data.income_data,
         });
       } catch (error) {
         console.error("Failed to fetch initial data:", error);
