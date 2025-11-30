@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import apiClient from "../api/axios";
 import GoalCard from '../components/GoalCard';
+import PageWrapper from "../components/PageWrapper";
+import Card from "../components/ui/Card";
 
 const Goals = () => {
   const [goals, setGoals] = useState([]);
@@ -51,6 +53,7 @@ const Goals = () => {
   };
 
   return (
+    <PageWrapper>
     <div className="p-6">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Financial Goals</h1>
 
@@ -144,6 +147,7 @@ const Goals = () => {
         )}
       </div>
     </div>
+    </PageWrapper>
   );
 };
 

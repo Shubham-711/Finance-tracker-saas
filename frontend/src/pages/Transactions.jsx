@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import apiClient from '../api/axios';
 import { useData } from '../context/DataContext';
 import AddTransactionModal from '../components/AddTransactionModal';
+import PageWrapper from '../components/PageWrapper';
+
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -31,6 +33,7 @@ const Transactions = () => {
   if (loading) return <div>Loading transactions...</div>;
 
   return (
+    <PageWrapper>
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Transactions</h1>
@@ -83,6 +86,7 @@ const Transactions = () => {
         onTransactionAdded={handleTransactionAdded}
       />
     </div>
+    </PageWrapper>
   );
 };
 

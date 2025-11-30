@@ -9,31 +9,25 @@ router = APIRouter(prefix="/reports", tags=["reports"])
 
 
 @router.get("/summary")
-def monthly_summary(db: Session = Depends(dbm.get_db), current_user: models.User = Depends(get_current_user)):
-    print("\n--- [DEBUG] Fetching /reports/summary ---") # DEBUG LINE
-    today = date.today()
-    start_of_month = date(today.year, today.month, 1)
-    
+def get_summary(
+    db: Session = Depends(dbm.get_db),
+    current_user: models.User = Depends(get_current_user),
+):
     transactions = db.query(models.Transaction).filter(
-        models.Transaction.user_id == current_user.id,
-        models.Transaction.date >= start_of_month
+        models.Transaction.user_id == current_user.id
     ).all()
-
-    # DEBUG: Print exactly what the database returned
+    
     for t in transactions:
-        print(f"[DEBUG] Transaction ID: {t.id}, Amount: {t.amount}, Type: {t.transaction_type}")
+        print(f"ID: {t.id}, Type: {t.transaction_type}, Amount: {t.amount}")
 
-    # Correct calculation logic
-    total_income = sum(t.amount for t in transactions if t.transaction_type == "income")
-    total_expense = sum(t.amount for t in transactions if t.transaction_type == "expense")
+     
+    income = sum(t.amount for t in transactions if t.transaction_type.lower() == "income")
+    expense = sum(t.amount for t in transactions if t.transaction_type.lower() == "expense")
 
-    print(f"[DEBUG] Calculated Income: {total_income}, Calculated Expense: {total_expense}\n") # DEBUG LINE
+    balance = income - expense
 
-    return {
-        "month": today.strftime("%B %Y"),
-        "total_income": total_income,
-        "total_expense": total_expense,
-    }
+    return {"income": income, "expense": expense, "balance": balance}
+
 
 
 @router.get("/categories")

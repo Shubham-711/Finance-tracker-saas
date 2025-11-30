@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import PageWrapper from "../components/PageWrapper";
 
 function Signup({ onSignupSuccess }) {
   const [name, setName] = useState("");
@@ -28,6 +29,7 @@ function Signup({ onSignupSuccess }) {
   };
 
   return (
+    <PageWrapper>
     <div className="flex items-center justify-center h-screen bg-gray-100">
       <div className="bg-white p-6 rounded shadow-md w-96">
         <h2 className="text-2xl font-bold mb-4">Sign Up</h2>
@@ -73,6 +75,7 @@ function Signup({ onSignupSuccess }) {
         </p>
       </div>
     </div>
+    </PageWrapper>
   );
 }
 

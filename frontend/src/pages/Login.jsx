@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import apiClient from "../api/axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import PageWrapper from "../components/PageWrapper";
 
 const Login = ({ onLoginSuccess }) => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -36,6 +37,7 @@ const handleSubmit = async (e) => {
 };
 
   return (
+     <PageWrapper>
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <form
         onSubmit={handleSubmit}
@@ -69,6 +71,7 @@ const handleSubmit = async (e) => {
         </button>
       </form>
     </div>
+    </PageWrapper>
   );
 };
 

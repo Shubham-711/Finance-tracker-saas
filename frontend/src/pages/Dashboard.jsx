@@ -1,165 +1,179 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/sidebar";
-import AddTransactionModal from "../components/AddTransactionModal";
-import AddGoalModal from "../components/AddGoalModal";
-import apiClient from "../api/axios";
-import RecentTransactionsTable from '../components/RecentTransactionsTable';
-
+import PageWrapper from "../components/PageWrapper";
+import Card from "../components/ui/Card";
+import { useData } from "../context/DataContext";
+import { Wallet, TrendingUp, TrendingDown, PiggyBank } from "lucide-react";
+console.log("🔥 Dashboard.jsx LOADED — version 5");
 const Dashboard = () => {
-  const [transactions, setTransactions] = useState([]);
-  const [goals, setGoals] = useState([]);
-  const [isTxModalOpen, setIsTxModalOpen] = useState(false);
-  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
-  const [editingTransaction, setEditingTransaction] = useState(null);
-  const [editingGoal, setEditingGoal] = useState(null);
-  const [error, setError] = useState("");
+  const { summary, transactions, loading } = useData();
+  const [stats, setStats] = useState([]);
 
   useEffect(() => {
-    fetchTransactions();
-    fetchGoals();
-  }, []);
+    if (!summary) return;
 
-  const fetchTransactions = async () => {
-    try {
-      const res = await apiClient.get("/transactions");
-      setTransactions(res.data);
-    } catch (err) {
-      setError("Failed to fetch transactions.");
-    }
-  };
+    const totalBalance = summary.income - summary.expense;
 
-  const fetchGoals = async () => {
-    try {
-      const res = await apiClient.get("/goals");
-      setGoals(res.data);
-    } catch (err) {
-      setError("Failed to fetch goals.");
-    }
-  };
+    setStats([
+      {
+        title: "Total Balance",
+        value: `₹${totalBalance.toLocaleString("en-IN")}`,
+        change: "+12.5%",
+        icon: <Wallet className="w-5 h-5 text-gray-200" />,
+        changeColor: "text-emerald-400",
+      },
+      {
+        title: "Income",
+        value: `₹${summary.income.toLocaleString("en-IN")}`,
+        change: "+8.2%",
+        icon: <TrendingUp className="w-5 h-5 text-emerald-400" />,
+        changeColor: "text-emerald-400",
+      },
+      {
+        title: "Expenses",
+        value: `₹${summary.expense.toLocaleString("en-IN")}`,
+        change: "-4.3%",
+        icon: <TrendingDown className="w-5 h-5 text-rose-400" />,
+        changeColor: "text-rose-400",
+      },
+      {
+        title: "Savings",
+        value: `₹${(totalBalance * 0.5).toLocaleString("en-IN")}`,
+        change: "+15.1%",
+        icon: <PiggyBank className="w-5 h-5 text-indigo-300" />,
+        changeColor: "text-emerald-400",
+      },
+    ]);
+  }, [summary]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-  };
-
-  // DELETE Transaction
-  const handleDeleteTransaction = async (id) => {
-    try {
-      await apiClient.delete(`/transactions/${id}`);
-      setTransactions(transactions.filter((tx) => tx.id !== id));
-    } catch (err) {
-      setError("Failed to delete transaction.");
-    }
-  };
-
-  // DELETE Goal
-  const handleDeleteGoal = async (id) => {
-    try {
-      await apiClient.delete(`/goals/${id}`);
-      setGoals(goals.filter((goal) => goal.id !== id));
-    } catch (err) {
-      setError("Failed to delete goal.");
-    }
-  };
-
-  // Prepare for Edit (future)
-  const handleEditTransaction = (tx) => {
-    setEditingTransaction(tx);
-    setIsTxModalOpen(true);
-    // Pass editingTransaction to AddTransactionModal for editing (future)
-  };
-
-  const handleEditGoal = (goal) => {
-    setEditingGoal(goal);
-    setIsGoalModalOpen(true);
-    // Pass editingGoal to AddGoalModal for editing (future)
-  };
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center text-gray-400">
+        Loading dashboard…
+      </div>
+    );
+  }
 
   return (
-    <div className="flex">
-      <Sidebar onLogout={handleLogout} />
-      <div className="flex-1 p-6">
-        <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-        <div className="flex gap-4 mb-6">
-          <button onClick={() => setIsTxModalOpen(true)} className="px-4 py-2 bg-blue-600 text-white rounded-lg">+ Add Transaction</button>
-          <button onClick={() => setIsGoalModalOpen(true)} className="px-4 py-2 bg-green-600 text-white rounded-lg">+ Add Goal</button>
+    <PageWrapper>
+      <div className="min-h-screen w-full px-4 py-8 text-white lg:px-8">
+        <div className="mx-auto max-w-6xl space-y-8">
+          {/* 🟣 HERO HEADER */}
+          <section className="relative overflow-hidden rounded-3xl border border-white/5 bg-gradient-to-br from-[#111827] via-[#05060A] to-[#05060A] px-6 py-6 lg:px-8 lg:py-8 shadow-[0_18px_45px_rgba(0,0,0,0.7)]">
+            {/* subtle glow */}
+            <div
+              className="pointer-events-none absolute inset-0 opacity-70"
+              style={{
+                background:
+                  "radial-gradient(circle at top left, rgba(99,102,241,0.35), transparent 55%)",
+              }}
+            />
+            <div className="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <h1 className="text-3xl font-semibold tracking-tight lg:text-4xl">
+                  Dashboard
+                </h1>
+                <p className="mt-2 max-w-xl text-sm text-gray-400 lg:text-base">
+                  Welcome back! Here’s your real-time financial overview across
+                  income, expenses and savings.
+                </p>
+              </div>
+              {/* tiny summary pill on the right */}
+              <div className="inline-flex items-center gap-2 rounded-full bg-black/30 px-4 py-2 text-xs text-gray-300 border border-white/10">
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                Data synced from your latest transactions
+              </div>
+            </div>
+          </section>
+
+          {/* 📊 STAT CARDS */}
+          <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {stats.map((item) => (
+              <Card
+                key={item.title}
+                className="flex flex-col gap-3 border border-white/7 bg-[#0F1117] hover:border-indigo-400/40 hover:bg-[#111827] transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="text-xs font-medium uppercase tracking-wide text-gray-400">
+                    {item.title}
+                  </div>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 border border-white/10">
+                    {item.icon}
+                  </div>
+                </div>
+                <div className="text-2xl font-semibold tracking-tight">
+                  {item.value}
+                </div>
+                <div className={`text-xs font-medium ${item.changeColor}`}>
+                  {item.change} from last month
+                </div>
+              </Card>
+            ))}
+          </section>
+
+          {/* 🧾 TRANSACTIONS & SPENDING */}
+          <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {/* Recent Transactions */}
+            <Card className="border border-white/7 bg-[#0F1117]">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-semibold tracking-tight">
+                  Recent Transactions
+                </h2>
+              </div>
+
+              {transactions && transactions.length > 0 ? (
+                <ul className="divide-y divide-white/5">
+                  {transactions.slice(0, 6).map((tx) => (
+                    <li
+                      key={tx.id}
+                      className="flex items-center justify-between py-3 text-sm"
+                    >
+                      <div>
+                        <p className="font-medium text-gray-100">
+                          {tx.description || tx.category}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(tx.date).toLocaleDateString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </p>
+                      </div>
+                      <span
+                        className={`text-sm font-semibold ${
+                          tx.transaction_type === "income"
+                            ? "text-emerald-400"
+                            : "text-rose-400"
+                        }`}
+                      >
+                        {tx.transaction_type === "income" ? "+" : "-"}₹
+                        {tx.amount}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="flex h-40 items-center justify-center text-sm text-gray-500">
+                  No transactions yet. Add one to see your activity here.
+                </div>
+              )}
+            </Card>
+
+            {/* Spending Overview */}
+            <Card className="border border-white/7 bg-[#0F1117]">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-semibold tracking-tight">
+                  Spending Overview
+                </h2>
+              </div>
+              <div className="flex h-40 items-center justify-center text-sm text-gray-500">
+                Chart will appear here (monthly spend vs income).
+              </div>
+            </Card>
+          </section>
         </div>
-
-        {error && <div className="text-red-600 my-2">{error}</div>}
-
-        {/* Transactions */}
-        <h2 className="text-lg font-semibold mb-2">Recent Transactions</h2>
-        <ul className="space-y-2 mb-6">
-          {transactions.map((tx) => (
-            <li key={tx.id} className="p-3 border rounded-md flex items-center justify-between">
-              <span>
-                {tx.date} — <strong>{tx.transaction_type}</strong>: ₹{tx.amount} ({tx.category})
-
-              </span>
-              <span>
-                <button
-                  className="px-2 py-1 mr-2 bg-blue-500 text-white rounded"
-                  onClick={() => handleEditTransaction(tx)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="px-2 py-1 bg-red-500 text-white rounded"
-                  onClick={() => handleDeleteTransaction(tx.id)}
-                >
-                  Delete
-                </button>
-              </span>
-            </li>
-          ))}
-        </ul>
-
-        {/* Goals */}
-        <h2 className="text-lg font-semibold mb-2">Goals</h2>
-        <ul className="space-y-2">
-          {goals.map((goal) => (
-            <li key={goal.id} className="p-3 border rounded-md flex items-center justify-between">
-              <span>
-                🎯 {goal.title} — Target: ₹{goal.target_amount} by {goal.deadline}
-              </span>
-              <span>
-                <button
-                  className="px-2 py-1 mr-2 bg-blue-500 text-white rounded"
-                  onClick={() => handleEditGoal(goal)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="px-2 py-1 bg-red-500 text-white rounded"
-                  onClick={() => handleDeleteGoal(goal.id)}
-                >
-                  Delete
-                </button>
-              </span>
-            </li>
-          ))}
-        </ul>
-
-        <AddTransactionModal
-          isOpen={isTxModalOpen}
-          onClose={() => {
-            setIsTxModalOpen(false);
-            setEditingTransaction(null);
-          }}
-          onTransactionAdded={fetchTransactions}
-          editingTransaction={editingTransaction} // For future edit support
-        />
-        <AddGoalModal
-          isOpen={isGoalModalOpen}
-          onClose={() => {
-            setIsGoalModalOpen(false);
-            setEditingGoal(null);
-          }}
-          onGoalAdded={fetchGoals}
-          editingGoal={editingGoal} // For future edit support
-        />
       </div>
-    </div>
+    </PageWrapper>
   );
 };
 

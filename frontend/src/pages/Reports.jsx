@@ -2,7 +2,8 @@ import React from "react";
 import { useData } from "../context/DataContext";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Title } from 'chart.js';
 import { Doughnut, Line } from 'react-chartjs-2';
-import Card from "../components/Card";
+import Card from "../components/ui/Card";
+import PageWrapper from "../components/PageWrapper";
 
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Title);
@@ -10,6 +11,7 @@ ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointE
 const Reports = () => {
   // We are now asking for 'summary', 'trends', and 'loading' which the context provides.
   const { summary, trends, loading } = useData();
+  console.log("SUMMARY DATA:", summary);
 
   if (loading) return <p>Loading reports...</p>;
   if (!summary || !trends) return <p>No report data available yet.</p>;
@@ -18,7 +20,7 @@ const Reports = () => {
   const pieChartData = {
     labels: ['Income', 'Expense'],
     datasets: [{
-      data: [summary.total_income, summary.total_expense],
+      data: [summary.income, summary.expense],
       backgroundColor: ['#10B981', '#EF4444'],
       borderColor: '#FFFFFF',
       borderWidth: 2,
@@ -45,6 +47,7 @@ const Reports = () => {
   };
 
   return (
+    <PageWrapper>
     <div className="p-6 space-y-6">
       <h1 className="text-3xl font-bold text-gray-800">Reports</h1>
       
@@ -52,11 +55,15 @@ const Reports = () => {
         <div className="flex justify-around text-center">
           <div>
             <p className="text-gray-500">Total Income</p>
-            <p className="text-2xl font-bold text-green-600">₹{summary.total_income.toFixed(2)}</p>
+            <p className="text-2xl font-bold text-green-600">
+            ₹{summary?.income ? summary.income.toFixed(2) : "0.00"}
+            </p>
+
           </div>
           <div>
             <p className="text-gray-500">Total Expense</p>
-            <p className="text-2xl font-bold text-red-500">₹{summary.total_expense.toFixed(2)}</p>
+            <p className="text-2xl font-bold text-red-500">₹{summary?.expense ? summary.expense.toFixed(2) : "0.00"}
+            </p>
           </div>
         </div>
       </Card>
@@ -75,6 +82,7 @@ const Reports = () => {
         </Card>
       </div>
     </div>
+    </PageWrapper>
   );
 };
 

@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-gray-50 text-gray-900 font-sans;
+/* Custom glass effect */
+.glass-effect {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-lg;
+}
+
+.bg-ambient-gradient {
+  @apply bg-gradient-to-br from-slate-900 to-slate-950;
 }
