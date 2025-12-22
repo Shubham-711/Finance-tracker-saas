@@ -30,7 +30,12 @@ def get_goals(db: Session = Depends(dbm.get_db), current_user: models.User = Dep
 
 # ---------------- UPDATE GOAL ----------------
 @router.put("/{goal_id}", response_model=schemas.GoalResponse)
-def update_goal(goal_id: int, updated: schemas.GoalCreate, db: Session = Depends(dbm.get_db), current_user: models.User = Depends(get_current_user)):
+def update_goal(
+    goal_id: int, 
+    updated: schemas.GoalCreate, 
+    db: Session = Depends(dbm.get_db), 
+    current_user: models.User = Depends(get_current_user)
+):
     goal = db.query(models.Goal).filter(models.Goal.id == goal_id, models.Goal.user_id == current_user.id).first()
     if not goal:
         raise HTTPException(status_code=404, detail="Goal not found")
@@ -38,6 +43,7 @@ def update_goal(goal_id: int, updated: schemas.GoalCreate, db: Session = Depends
     goal.target_amount = updated.target_amount
     goal.current_amount = updated.current_amount
     goal.deadline = updated.deadline
+    
     db.commit()
     db.refresh(goal)
     return goal
