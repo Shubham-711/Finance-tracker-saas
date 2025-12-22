@@ -18,12 +18,13 @@ origins = [
     "http://127.0.0.1:5174",
 ]
 
+origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"], # The address of your React app
+    allow_origins=origins, # Allows your frontend to talk to backend
     allow_credentials=True,
-    allow_methods=["*"], # Allows all methods (GET, POST, PUT, DELETE)
-    allow_headers=["*"], # Allows all headers (like 'Authorization' for tokens)
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # dependency helper (used by some endpoints)
