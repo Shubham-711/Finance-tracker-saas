@@ -14,11 +14,10 @@ A full-stack financial management app to track income/expenses in real-time. Bui
 ---
 
 ## 🎥 Project Demo
+
 Here is a walkthrough of the application:
-
-<video src="https://github.com/user-attachments/assets/0b32c2b0-8f0f-4f33-86ca-7c9703866cc0" controls="controls" style="max-width: 100%;">
-</video>
-
+![demo1-ezgif com-optimize (1)](https://github.com/user-attachments/assets/39dc906f-f144-47c1-baa3-5bd477ba7ad7)
+ 
 ---
 
 ## ✨ Features
